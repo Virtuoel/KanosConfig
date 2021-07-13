@@ -1,0 +1,24 @@
+{
+	"schemaVersion": 1,
+	"id": "kanos_config",
+	"name": "KanosConfig",
+	"version": "${version}",
+	"description": "Config library used across my mods.",
+	"authors":
+	[
+		"Virtuoel"
+	],
+	"contact":
+	{
+		"homepage": "https://github.com/Virtuoel/KanosConfig",
+		"issues": "https://github.com/Virtuoel/KanosConfig/issues",
+		"sources": "https://github.com/Virtuoel/KanosConfig"
+	},
+	"license": "MIT",
+	"icon": "assets/kanos_config/icon.png",
+	"environment": "*",
+	"depends":
+	{
+		"fabricloader": ">=0.11.6"
+	}
+}
