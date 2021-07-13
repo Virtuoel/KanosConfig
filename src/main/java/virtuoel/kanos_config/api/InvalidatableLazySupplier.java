@@ -3,24 +3,34 @@ package virtuoel.kanos_config.api;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class InvalidatableLazySupplier<T> implements Supplier<T>
+public final class InvalidatableLazySupplier<T> implements Supplier<T>
 {
-	final Supplier<T> supplier;
-	boolean valid = false;
-	T value;
+	private final Supplier<T> supplier;
+	private boolean valid = false;
+	private T value;
 	
-	public InvalidatableLazySupplier(Supplier<T> delegate)
+	public static <T> InvalidatableLazySupplier<T> of(final Supplier<T> delegate)
+	{
+		if (delegate instanceof InvalidatableLazySupplier)
+		{
+			return (InvalidatableLazySupplier<T>) delegate;
+		}
+		
+		return new InvalidatableLazySupplier<>(delegate);
+	}
+	
+	private InvalidatableLazySupplier(final Supplier<T> delegate)
 	{
 		this.supplier = Objects.requireNonNull(delegate);
 	}
 	
-	public void invalidate()
+	public final void invalidate()
 	{
 		valid = false;
 	}
 	
 	@Override
-	public T get()
+	public final T get()
 	{
 		if (!valid)
 		{

@@ -65,7 +65,7 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 	{
 		defaultValues.add(defaultValue);
 		
-		final InvalidatableLazySupplier<T> entry = new InvalidatableLazySupplier<>(entryFunction.apply(config));
+		final InvalidatableLazySupplier<T> entry = InvalidatableLazySupplier.of(entryFunction.apply(config));
 		
 		config.addInvalidationListener(entry::invalidate);
 		
