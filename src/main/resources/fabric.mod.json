@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "kanos_config",
-	"name": "KanosConfig",
+	"name": "Kanos Config",
 	"version": "${version}",
 	"authors":
 	[
