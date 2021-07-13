@@ -3,7 +3,6 @@
 	"id": "kanos_config",
 	"name": "KanosConfig",
 	"version": "${version}",
-	"description": "Config library used across my mods.",
 	"authors":
 	[
 		"Virtuoel"
@@ -20,5 +19,15 @@
 	"depends":
 	{
 		"fabricloader": ">=0.11.6"
+	},
+	"custom":
+	{
+		"modmenu":
+		{
+			"badges":
+			[
+				"library"
+			]
+		}
 	}
 }
