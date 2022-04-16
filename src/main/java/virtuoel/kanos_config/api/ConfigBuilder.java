@@ -69,7 +69,7 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 		
 		config.addInvalidationListener(entry::invalidate);
 		
-		return createConfigEntry(name, entry, v ->
+		return createConfigEntry(name, defaultValue, entry, v ->
 		{
 			entrySetterFunction.apply(config).accept(v);
 			entry.invalidate();
@@ -88,6 +88,14 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 		return defaultConfig;
 	}
 	
+	public <T> MutableConfigEntry<T> createConfigEntry(final String name, final T defaultValue, final Supplier<T> supplier, final Consumer<T> consumer)
+	{
+		return createConfigEntry(name, supplier, consumer);
+	}
+	
+	protected abstract H createConfig();
+	
+	@Deprecated
 	public <T> MutableConfigEntry<T> createConfigEntry(final String name, final Supplier<T> supplier, final Consumer<T> consumer)
 	{
 		return new MutableConfigEntry<T>()
@@ -117,8 +125,6 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 			}
 		};
 	}
-	
-	protected abstract H createConfig();
 	
 	@Deprecated
 	public final <T> Supplier<T> customConfig(final Consumer<R> defaultValue, final Function<H, Supplier<T>> entryFunction)
