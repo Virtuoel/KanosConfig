@@ -1,5 +1,6 @@
 package virtuoel.kanos_config.api;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import net.fabricmc.loader.api.FabricLoader;
+
 public class JsonConfigBuilder extends ConfigBuilder<JsonObject, JsonElement, JsonConfigHandler>
 {
+	@Deprecated
 	public JsonConfigBuilder(final String namespace, final String path)
+	{
+		this(namespace, FabricLoader.getInstance().getConfigDir().resolve(namespace).resolve(path).normalize());
+	}
+	
+	public JsonConfigBuilder(final String namespace, final Path path)
 	{
 		super(namespace, path);
 	}
@@ -89,7 +98,7 @@ public class JsonConfigBuilder extends ConfigBuilder<JsonObject, JsonElement, Js
 		return new JsonConfigHandler(
 			namespace,
 			path,
-			() -> populateDefaults(new JsonObject())
+			populateDefaults(JsonObject::new)
 		);
 	}
 }

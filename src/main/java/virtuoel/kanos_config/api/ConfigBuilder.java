@@ -1,5 +1,6 @@
 package virtuoel.kanos_config.api;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,11 +10,12 @@ import java.util.function.Supplier;
 
 public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 {
-	protected final String namespace, path;
+	protected final String namespace;
+	protected final Path path;
 	private final Collection<Consumer<Supplier<R>>> defaultValues;
 	public final H config;
 	
-	public ConfigBuilder(final String namespace, final String path)
+	public ConfigBuilder(final String namespace, final Path path)
 	{
 		this.namespace = namespace;
 		this.path = path;
@@ -76,27 +78,29 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 		});
 	}
 	
-	protected final R populateDefaults(final R defaultConfig)
+	protected final Supplier<R> populateDefaults(final Supplier<R> defaultConfigFactory)
 	{
-		final Supplier<R> defaultConfigGetter = () -> defaultConfig;
-		
-		for (final Consumer<Supplier<R>> value : defaultValues)
-		{
-			value.accept(defaultConfigGetter);
-		}
-		
-		return defaultConfig;
+		return populateDefaults(defaultConfigFactory, defaultValues);
 	}
 	
-	public <T> MutableConfigEntry<T> createConfigEntry(final String name, final T defaultValue, final Supplier<T> supplier, final Consumer<T> consumer)
+	protected static <R> Supplier<R> populateDefaults(final Supplier<R> defaultConfigFactory, final Collection<Consumer<Supplier<R>>> defaultValues)
 	{
-		return createConfigEntry(name, supplier, consumer);
+		return () ->
+		{
+			final Supplier<R> defaultConfigGetter = InvalidatableLazySupplier.of(defaultConfigFactory);
+			
+			for (final Consumer<Supplier<R>> value : defaultValues)
+			{
+				value.accept(defaultConfigGetter);
+			}
+			
+			return defaultConfigGetter.get();
+		};
 	}
 	
 	protected abstract H createConfig();
 	
-	@Deprecated
-	public <T> MutableConfigEntry<T> createConfigEntry(final String name, final Supplier<T> supplier, final Consumer<T> consumer)
+	public <T> MutableConfigEntry<T> createConfigEntry(final String name, final T defaultValue, final Supplier<T> supplier, final Consumer<T> consumer)
 	{
 		return new MutableConfigEntry<T>()
 		{
@@ -124,17 +128,5 @@ public abstract class ConfigBuilder<R, E, H extends ConfigHandler<R>>
 				consumer.accept(value);
 			}
 		};
-	}
-	
-	@Deprecated
-	public final <T> Supplier<T> customConfig(final Consumer<R> defaultValue, final Function<H, Supplier<T>> entryFunction)
-	{
-		defaultValues.add(s -> defaultValue.accept(s.get()));
-		
-		final InvalidatableLazySupplier<T> entry = InvalidatableLazySupplier.of(entryFunction.apply(config));
-		
-		config.addInvalidationListener(entry::invalidate);
-		
-		return createConfigEntry("unnamed_config_" + defaultValues.size(), entry, v -> {});
 	}
 }
