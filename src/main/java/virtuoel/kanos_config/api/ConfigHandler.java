@@ -41,12 +41,17 @@ public abstract class ConfigHandler<S> implements Supplier<S>
 		{
 			save(cachedConfig);
 			
-			cachedConfig = null;
-			
-			for (final Runnable listener : invalidationListeners)
-			{
-				listener.run();
-			}
+			invalidate();
+		}
+	}
+	
+	public synchronized void invalidate()
+	{
+		cachedConfig = null;
+		
+		for (final Runnable listener : invalidationListeners)
+		{
+			listener.run();
 		}
 	}
 	
