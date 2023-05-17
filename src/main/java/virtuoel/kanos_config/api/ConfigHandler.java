@@ -35,7 +35,7 @@ public abstract class ConfigHandler<S> implements Supplier<S>
 		return namespace;
 	}
 	
-	public void onConfigChanged()
+	public synchronized void onConfigChanged()
 	{
 		if (cachedConfig != null)
 		{
@@ -61,7 +61,7 @@ public abstract class ConfigHandler<S> implements Supplier<S>
 		return cachedConfig != null ? cachedConfig : (cachedConfig = load());
 	}
 	
-	public S load()
+	public synchronized S load()
 	{
 		S configData = null;
 		try
